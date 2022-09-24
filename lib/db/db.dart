@@ -151,7 +151,7 @@ class DBHelper {
   // ADD LAST RECENT SSEARCH ITEM::::::::::::::::::::::::::::
   Future<void> addRecentSearch(RecentSearch recentSearch) async {
     try {
-      _database!.insert(
+      int n = await _database!.insert(
         'RecentSearch',
         {
           'name': recentSearch.name,
@@ -159,23 +159,34 @@ class DBHelper {
           'lon': recentSearch.lon,
         },
       );
+      print(n);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  ///SELECTE THE LAST 5 RAWs OF RECENT SEARCH :::::::::::::::::::::::::::::::::;
-  Future<List<String>> selecetRecentSearch() async {
-    List<String> listOfRecent = [];
+  Future<RecentSearch> selecteRecentRow() async {
+    List<Map<String, dynamic>> list = [];
     try {
-      List<Map> list =
+      list = await _database!
+          .rawQuery("SELECT * FROM RecentSearch ORDER BY id DESC LIMIT 1;");
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString(), backgroundColor: Colors.red);
+    }
+    return RecentSearch.fromMap(list.first);
+  }
+
+  ///SELECTE THE LAST 5 RAWs OF RECENT SEARCH :::::::::::::::::::::::::::::::::;
+  Future<List<RecentSearch>> selecetRecentSearch() async {
+    List<RecentSearch> listOfRecent = [];
+    try {
+      List<Map<String, dynamic>> list =
           await _database!.rawQuery('select * from RecentSearch ;');
 
       for (var i = 0; i < list.length; i++) {
-        listOfRecent.add(list[i]['name']);
+        listOfRecent.add(RecentSearch.fromMap(list[i]));
       }
     } catch (e) {
-      debugPrint(e.toString());
       Fluttertoast.showToast(
           msg: e.toString(),
           backgroundColor: Colors.red,

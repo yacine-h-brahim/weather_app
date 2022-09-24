@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/controles/current_weather.dart';
 import 'package:weather_app/views/pages/file.dart';
+
 import 'package:weather_app/views/pages/home.dart';
-import 'package:weather_app/views/pages/search.dart';
 
 import '../../db/db.dart';
 
@@ -13,6 +13,8 @@ void main() async {
   await DBHelper.initDB();
 
   await DBHelper().insert();
+  //GET LAST ROW FROM RECENT SEARCH TABLE AND ATTECHE IT TO THE LOCATION PROVIDER :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
   runApp(const MyApp());
 }
 
@@ -22,7 +24,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<WeatherProvider>(
-      create: (context) => WeatherProvider(),
+      create: (context) {
+        return WeatherProvider();
+      },
       child: MaterialApp(
         title: 'Weather Teller',
         theme: ThemeData(

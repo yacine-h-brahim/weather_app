@@ -1,8 +1,9 @@
-import 'package:coolicons/coolicons.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weather_app/models/recent_search.dart';
 
+import '../../controles/current_weather.dart';
 import '../../db/db.dart';
-import 'main.dart';
 
 class Jome extends StatefulWidget {
   const Jome({super.key});
@@ -12,49 +13,26 @@ class Jome extends StatefulWidget {
 }
 
 class _JomeState extends State<Jome> {
-  List<String> recentSearch = [];
-  String? recentSearchName = '';
-
+  RecentSearch recentSearch = RecentSearch();
   @override
   void initState() {
-    DBHelper().selecetRecentSearch().then((value) {
-      for (int i = 0; i < value.length; i++) {
-        recentSearch.add(value[i]);
-      }
-      debugPrint('${recentSearch.toString()} recentSearch.length');
+    super.initState();
+    DBHelper().selecteRecentRow().then((value) {
       setState(() {
-        recentSearchName = recentSearch.first;
+        Provider.of<WeatherProvider>(context, listen: false).recentSearch =
+            value;
       });
     });
-
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<WeatherProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('data'),
+        title: Text('${provider.recentSearch.id}'),
       ),
-      body: Center(
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton(
-            value: recentSearchName,
-            items: recentSearch.map(buildItem).toList(),
-            onChanged: (value) {
-              setState(() {
-                // print(recentSearchName!.id);
-                recentSearchName = value;
-              });
-            },
-            icon: const Icon(Coolicons.caret_down, size: 24, color: blue2E3A59),
-            isExpanded: true,
-          ),
-        ),
-      ),
+      body: const Center(),
     );
   }
-
-  DropdownMenuItem buildItem(String e) =>
-      DropdownMenuItem(value: e, child: Text(e));
 }

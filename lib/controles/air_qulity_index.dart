@@ -9,7 +9,7 @@ import 'package:weather_app/models/air_pollution_data.dart';
 class AirQulity {
   AirPollutionData? airPollutionData = AirPollutionData();
 
-  Future<AirPollutionData?> getAirQulity(double lon, lat) async {
+  Future<AirPollutionData?> getAirQulity(double? lat, double? lon) async {
     try {
       String url =
           'http://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=$apiKey2';

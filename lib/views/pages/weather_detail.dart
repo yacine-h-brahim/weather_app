@@ -10,13 +10,19 @@ import 'package:weather_app/controles/current_weather.dart';
 import 'package:weather_app/controles/forecast.dart';
 import 'package:weather_app/models/air_pollution_data.dart';
 import 'package:weather_app/models/forecast.dart';
+import 'package:weather_app/models/recent_search.dart';
 import 'package:weather_app/models/weather.dart';
 
 import '../../db/db.dart';
 
 class DetailWeather extends StatefulWidget {
-  const DetailWeather({required this.currentSnapshot, super.key});
+  const DetailWeather({
+    required this.currentSnapshot,
+    required this.recentSearch,
+    super.key,
+  });
   final AsyncSnapshot<CurrentWeather> currentSnapshot;
+  final RecentSearch recentSearch;
   @override
   State<DetailWeather> createState() => _DetailWeatherState();
 }
@@ -54,8 +60,9 @@ class _DetailWeatherState extends State<DetailWeather> {
           },
         ),
         title: Text(
-          '${widget.currentSnapshot.data!.name}',
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          '${widget.recentSearch.name}',
+          style: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
         ),
         centerTitle: true,
         actions: const [
@@ -153,7 +160,8 @@ class _DetailWeatherState extends State<DetailWeather> {
             ]),
           ),
           FutureBuilder<ForecastFiveThree?>(
-              future: ForecastFiveThreeProvider.getForcast(4.5, 3.225),
+              future: ForecastFiveThreeProvider.getForcast(
+                  widget.recentSearch.lat, widget.recentSearch.lon),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return SizedBox(
@@ -161,7 +169,7 @@ class _DetailWeatherState extends State<DetailWeather> {
                       child: ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           scrollDirection: Axis.horizontal,
-                          itemCount: snapshot.data!.cnt,
+                          itemCount: 10,
                           itemBuilder: ((context, index) => Container(
                               margin: const EdgeInsets.only(right: 10),
                               // height: 100,
@@ -192,13 +200,11 @@ class _DetailWeatherState extends State<DetailWeather> {
                                             color:
                                                 Color.fromRGBO(73, 67, 67, 1)))
                                   ])))));
+                } else if (snapshot.hasError) {
+                  Fluttertoast.showToast(msg: snapshot.error.toString());
+                  return const CircularProgressIndicator();
                 } else {
-                  if (snapshot.hasError) {
-                    Fluttertoast.showToast(msg: snapshot.error.toString());
-                    return const CircularProgressIndicator();
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
+                  return const CircularProgressIndicator();
                 }
               }),
           const SizedBox(height: 5),
@@ -215,84 +221,81 @@ class _DetailWeatherState extends State<DetailWeather> {
               Expanded(child: Container())
             ]),
           ),
-          // cardAQI(widget.currentSnapshot.data!.name!),
           FutureBuilder<AirPollutionData?>(
               future: AirQulity().getAirQulity(
-                  widget.currentSnapshot.data!.coord!.lon!,
-                  widget.currentSnapshot.data!.coord!.lat!),
+                  widget.recentSearch.lat, widget.recentSearch.lon),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   Fluttertoast.showToast(msg: snapshot.error.toString());
                   return Text(snapshot.error.toString());
                 } else if (snapshot.hasData) {
                   return Container(
-                    margin: const EdgeInsets.only(
-                        right: 16, left: 16, bottom: 5, top: 2),
-                    height: MediaQuery.of(context).size.height * 0.13,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromRGBO(250, 250, 250, 1)),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircularPercentIndicator(
-                            animation: true,
-                            backgroundColor:
-                                const Color.fromRGBO(228, 228, 228, 1),
-                            animationDuration: 1500,
-                            radius: 30.0,
-                            lineWidth: 5.0,
-                            percent: AirPollutionData.getMarks(
-                                snapshot.data!.list!.first.main!.aqi)['perc'],
-                            animateFromLastPercent: true,
-                            startAngle: 180,
-                            center: Text(
-                              "${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['perc'] * 100}",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    //TODO: GREEN IF AQI IN GOOD STATE ELSE RED OR ORANG
-                                    AirPollutionData.getMarks(snapshot
-                                        .data!.list!.first.main!.aqi)['color'],
-                              ),
-                            ),
-                            progressColor: AirPollutionData.getMarks(
-                                snapshot.data!.list!.first.main!.aqi)['color'],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'AQI -${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['name']}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                    fontSize: 14),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * .7,
-                                child: Text(
-                                  AirPollutionData.getMarks(snapshot.data!.list!
-                                      .first.main!.aqi)['description'],
-                                  maxLines: 3,
-                                  softWrap: true,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    height: 1.2,
-                                  ),
-
-                                  // overflow: TextOverflow.clip,
+                      margin: const EdgeInsets.only(
+                          right: 16, left: 16, bottom: 5, top: 2),
+                      height: MediaQuery.of(context).size.height * 0.13,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color.fromRGBO(250, 250, 250, 1)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircularPercentIndicator(
+                              animation: true,
+                              backgroundColor:
+                                  const Color.fromRGBO(228, 228, 228, 1),
+                              animationDuration: 1500,
+                              radius: 30.0,
+                              lineWidth: 5.0,
+                              percent: AirPollutionData.getMarks(
+                                  snapshot.data!.list!.first.main!.aqi)['perc'],
+                              animateFromLastPercent: true,
+                              startAngle: 180,
+                              center: Text(
+                                "${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['perc'] * 100}",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      //TODO: GREEN IF AQI IN GOOD STATE ELSE RED OR ORANG
+                                      AirPollutionData.getMarks(snapshot.data!
+                                          .list!.first.main!.aqi)['color'],
                                 ),
                               ),
-                            ],
-                          )
-                        ]),
-                  );
+                              progressColor: AirPollutionData.getMarks(snapshot
+                                  .data!.list!.first.main!.aqi)['color'],
+                            ),
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'AQI -${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['name']}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                        fontSize: 14),
+                                  ),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          .7,
+                                      child: Text(
+                                          AirPollutionData.getMarks(snapshot
+                                              .data!
+                                              .list!
+                                              .first
+                                              .main!
+                                              .aqi)['description'],
+                                          maxLines: 4,
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.2,
+                                          )))
+                                ])
+                          ]));
                 }
                 return const CircularProgressIndicator();
               }),

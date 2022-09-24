@@ -58,35 +58,35 @@ class AirPollutionData {
           map['color'] = Colors.green;
           map['perc'] = 0.2;
           map['description'] =
-              'The air quality in your area is currently very good. There is no air pollution that causes various diseases.';
+              'Everyone can continue their outdoor activities normally.';
           break;
         case 2:
           map['name'] = 'Fair';
           map['color'] = Colors.orange;
           map['perc'] = 0.4;
           map['description'] =
-              'The air quality in your area is currently very good. There is no air pollution that causes various diseases.';
+              'Only very few hypersensitive people should reduce outdoor activities.';
           break;
         case 3:
           map['name'] = 'Moderate';
           map['color'] = Colors.yellow;
           map['perc'] = 0.6;
           map['description'] =
-              'The air quality in your area is currently very good. There is no air pollution that causes various diseases.';
+              'Children, seniors and individuals with respiratory or heart diseases should reduce sustained and high-intensity outdoor exercises.';
           break;
         case 4:
           map['name'] = 'Poor';
           map['color'] = Colors.red;
           map['perc'] = 0.8;
           map['description'] =
-              'The air quality in your area is currently very good. There is no air pollution that causes various diseases.';
+              'Children, seniors and individuals with heart or lung diseases should stay indoors and avoid outdoor activities. General population should reduce outdoor activities.';
           break;
         case 5:
           map['name'] = 'Very Poor';
           map['color'] = Colors.brown;
           map['perc'] = 1.0;
           map['description'] =
-              'The air quality in your area is currently very good. There is no air pollution that causes various diseases.';
+              'Children, seniors and the sick should stay indoors and avoid physical exertion. General population should avoid outdoor activities.';
           break;
       }
     }

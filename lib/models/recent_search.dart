@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class RecentSearch {
   final int? id;
-  final String? name;
+  late final String? name;
   final double? lat;
   final double? lon;
 
