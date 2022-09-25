@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Ghardaia",
+        "local_names": {
+            "pt": "Ghardaïa",
+            "vi": "Ghardaia",
+            "ur": "غرادیہ",
+            "tr": "Gardaya",
+            "lt": "Gardaja",
+            "en": "Ghardaia",
+            "ascii": "Ghardaia",
+            "eo": "Ghardaia",
+            "uk": "Гардая",
+            "cs": "Ghardája",
+            "ms": "Ghardaia",
+            "fr": "Ghardaïa",
+            "feature_name": "Ghardaia",
+            "bg": "Гардая",
+            "eu": "Ghardaia",
+            "de": "Ghardaia",
+            "ja": "ガルダイア",
+            "kk": "Гардая қаласы",
+            "ky": "Гардая",
+            "ru": "Гардая",
+            "da": "Ghardaïa",
+            "es": "Gardaya",
+            "zh": "盖尔达耶",
+            "fa": "غردایه",
+            "ar": "غرداية",
+            "nl": "Ghardaïa (stad)",
+            "el": "Γκαρντάια",
+            "pl": "Ghardaja",
+            "sw": "Jimbo ya Ghardaïa (Aljeria)",
+            "ko": "가르다이아"
+        },
+        "lat": 32.485855,
+        "lon": 3.677104,
+        "country": "DZ",
+        "state": "Ghardaia"
+    },
+    {
+        "name": "Mansoura",
+        "local_names": {
+            "ar": "منصورة",
+            "it": "Mansoura (Ghardaïa)",
+            "ro": "Mansoura (Ghardaïa)",
+            "ur": "منصورہ، غردایہ",
+            "en": "Mansoura",
+            "fr": "Mansoura",
+            "ms": "Mansoura, Ghardaia",
+            "pt": "Mansoura (Ghardaïa)"
+        },
+        "lat": 32.055414150000004,
+        "lon": 3.2387544183406556,
+        "country": "DZ",
+        "state": "El Menia"
+    }
+]

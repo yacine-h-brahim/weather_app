@@ -32,11 +32,11 @@ class _DetailWeatherState extends State<DetailWeather> {
 
   @override
   void initState() {
-    DBHelper().selecetLastUpdate().then((value) {
-      setState(() {
-        lastUpdateTime = value;
-      });
-    });
+    // DBHelper().selecetLastUpdate().then((value) {
+    //   setState(() {
+    //     lastUpdateTime = value;
+    //   });
+    // });
     super.initState();
   }
 
@@ -133,7 +133,7 @@ class _DetailWeatherState extends State<DetailWeather> {
                                           .selecetLastUpdate()
                                           .then((value) {
                                         setState(() {
-                                          lastUpdateTime = value;
+                                          provider.lastUpdateTime = value;
                                         });
                                       });
                                     },

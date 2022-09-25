@@ -23,43 +23,46 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-String? lastUpdateTime = '';
-String recentSearchName = '';
-
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> recentSearchNames = <String>[];
-  Map<dynamic, RecentSearch> recentSearch = {};
   @override
   void initState() {
     super.initState();
+    DBHelper().selecetLastUpdate().then((value) {
+      setState(() {
+        context.read<WeatherProvider>().lastUpdateTime = value;
+      });
+    });
+
     DBHelper().selecteRecentRow().then((value) {
       setState(() {
-        print(value);
+        debugPrint(value.name.toString());
         Provider.of<WeatherProvider>(context, listen: false).recentSearch =
-            value;
+            RecentSearch(
+                id: value.id, lat: value.lat, lon: value.lon, name: value.name);
       });
     });
 //TODO:MEKE THIS AN CONSTANT IN THE WEATHER PROVIDER::::::::::::
-    DBHelper().selecetLastUpdate().then((value) {
-      setState(() {
-        lastUpdateTime = value;
-      });
-    });
     DBHelper().selecetRecentSearch().then((value) {
       for (int i = 0; i < value.length; i++) {
-        recentSearchNames.add(value[i].name!);
-        recentSearch[value[i].name] = value[i];
+        setState(() {
+          Provider.of<WeatherProvider>(context, listen: false)
+              .recentSearchList
+              .add(value[i]);
+        });
       }
-      setState(() {
-        recentSearchName = recentSearchNames.first;
-      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    var provider = Provider.of<WeatherProvider>(context);
+    var provider = Provider.of<WeatherProvider>(context, listen: true);
+
+    List<String> listOfName = provider.recentSearchList
+        .map(
+          (e) => e.name!,
+        )
+        .toList();
 
     return SafeArea(
       child: Scaffold(
@@ -78,12 +81,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: MediaQuery.of(context).size.width * .55,
                       child: DropdownButtonHideUnderline(
                           child: DropdownButton(
-                        value: recentSearchName,
-                        items: recentSearchNames.map(buildItem).toList(),
+                        value: provider.recentSearch.name,
+                        items: listOfName.map(buildItem).toList(),
                         onChanged: (value) {
-                          setState(() {
-                            recentSearchName = value!;
-                          });
+                          for (var e in provider.recentSearchList) {
+                            if (e.name == value) {
+                              setState(() {
+                                provider.recentSearch = e;
+                              });
+                            }
+                          }
                         },
                         icon: const Icon(Coolicons.caret_down,
                             size: 24, color: blue2E3A59),
@@ -105,8 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Center(
               child: FutureBuilder<ForecastFiveThree?>(
                   future: ForecastFiveThreeProvider.getForcast(
-                      recentSearch[recentSearchName]!.lat!,
-                      recentSearch[recentSearchName]!.lon!),
+                      provider.recentSearch.lat!, provider.recentSearch.lon!),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       Fluttertoast.showToast(msg: snapshot.error.toString());
@@ -230,9 +236,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ),
 
                                               //DONE: CHANGE THIS TO A STREAM BUILDER;
-                                              FutureBuilder(
-                                                  future: DBHelper()
-                                                      .selecetLastUpdate(),
+                                              StreamBuilder(
+                                                  stream: Stream.periodic(
+                                                      const Duration(
+                                                          seconds: 2)),
                                                   builder: (context, snapshot) {
                                                     return Row(
                                                         mainAxisAlignment:
@@ -240,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                              'Last update ${snapshot.data}',
+                                                              'Last update ${context.watch<WeatherProvider>().lastUpdateTime}',
                                                               style: const TextStyle(
                                                                   color: Colors
                                                                       .white,
@@ -262,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                     .then(
                                                                         (value) {
                                                                   setState(() {
-                                                                    lastUpdateTime =
+                                                                    provider.lastUpdateTime =
                                                                         value;
                                                                   });
                                                                 });
@@ -282,8 +289,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                             builder: (context) => DetailWeather(
                                                 currentSnapshot:
                                                     currentSnapshot,
-                                                recentSearch: recentSearch[
-                                                    recentSearchName]!),
+                                                recentSearch:
+                                                    provider.recentSearch),
                                           ));
                                     });
                               } else if (currentSnapshot.hasError) {

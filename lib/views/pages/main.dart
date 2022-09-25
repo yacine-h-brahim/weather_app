@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/controles/current_weather.dart';
 import 'package:weather_app/views/pages/file.dart';
-
 import 'package:weather_app/views/pages/home.dart';
 
 import '../../db/db.dart';
@@ -24,9 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<WeatherProvider>(
-      create: (context) {
-        return WeatherProvider();
-      },
+      create: (context) => WeatherProvider(),
       child: MaterialApp(
         title: 'Weather Teller',
         theme: ThemeData(

@@ -151,7 +151,7 @@ class DBHelper {
   // ADD LAST RECENT SSEARCH ITEM::::::::::::::::::::::::::::
   Future<void> addRecentSearch(RecentSearch recentSearch) async {
     try {
-      int n = await _database!.insert(
+      await _database!.insert(
         'RecentSearch',
         {
           'name': recentSearch.name,
@@ -159,7 +159,6 @@ class DBHelper {
           'lon': recentSearch.lon,
         },
       );
-      print(n);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -194,7 +193,4 @@ class DBHelper {
     }
     return listOfRecent;
   }
-
-//ADD TO
-
 }

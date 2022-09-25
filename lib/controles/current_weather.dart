@@ -9,9 +9,11 @@ import 'package:weather_app/models/weather.dart';
 import '../API/secret.dart';
 
 class WeatherProvider with ChangeNotifier {
-  // String? lastUpdateTime = '';
+  String? lastUpdateTime = '';
   late int? statusCode = 0;
   late RecentSearch recentSearch = RecentSearch();
+  List<RecentSearch> recentSearchList = [];
+
   bool isNight() {
     const int sunset = 19;
     const int sunrise = 6;
