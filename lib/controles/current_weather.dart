@@ -10,8 +10,7 @@ import '../API/secret.dart';
 
 class WeatherProvider with ChangeNotifier {
   String? lastUpdateTime = '';
-  late int? statusCode = 0;
-  late RecentSearch recentSearch = RecentSearch();
+  RecentSearch recentSearch = RecentSearch();
   List<RecentSearch> recentSearchList = [];
 
   bool isNight() {
@@ -27,7 +26,6 @@ class WeatherProvider with ChangeNotifier {
         'https://api.openweathermap.org/data/2.5/weather?q=${recentSearch.name}&units=metric&appid=$apiKey1';
     try {
       var resoponse = await http.get(Uri.parse(url));
-      statusCode = resoponse.statusCode;
 
       currentWeather = CurrentWeather.fromJson(jsonDecode(resoponse.body));
     } catch (e) {

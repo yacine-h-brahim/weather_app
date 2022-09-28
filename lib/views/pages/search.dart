@@ -1,19 +1,15 @@
-// import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:weather_app/db/db.dart';
-// import 'package:weather_app/views/pages/main.dart';
-
-// import '../../controles/current_weather.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_app/db/all_cities.dart';
+import 'package:weather_app/controles/current_weather.dart';
 import 'package:weather_app/models/recent_search.dart';
 
-import '../../controles/current_weather.dart';
+import '../../controles/geographic.dart';
 import '../../db/db.dart';
+import '../../models/geo.dart';
 
 class Search extends SearchDelegate {
+  List<Goe> suggestionsList = [];
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -34,68 +30,106 @@ class Search extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    var provider = Provider.of<WeatherProvider>(context, listen: false);
-    provider.getCurrent();
-    if (query.trim().isEmpty) {
-      return const Center(
-        child: Text(
-          'oops!! this field is required ,enter a location 😕😕',
-          style: TextStyle(fontSize: 17, color: Colors.red),
-        ),
-      );
-    } else if (provider.statusCode != 200) {
+    var provider = Provider.of<WeatherProvider>(context);
+    // if (suggestionsList.isNotEmpty) {
+    //   var goe = suggestionsList.where((element) => element.name == query);
+    //   RecentSearch recentSearchItem = RecentSearch(
+    //       name: goe.first.name, lat: goe.first.lat, lon: goe.first.lon);
+    //   provider.recentSearch = recentSearchItem;
+    //   DBHelper().addRecentSearch(recentSearchItem);
+    //   provider.recentSearchList.add(recentSearchItem);
+    //   Navigator.pop(context);
+    // } else
+    if (query.isNotEmpty) {
+      query = query[0].toUpperCase() + query.substring(1);
+      Geographic.codeStatus(query).then((value) {
+        if (value == 200) {
+          provider.recentSearch = Geographic.recent;
+          DBHelper().addRecentSearch(Geographic.recent);
+          provider.recentSearchList.add(Geographic.recent);
+          Navigator.pop(context, true);
+        } else {
+          return const Center(
+            child: Text(
+              'oops!! location not found 😕😕',
+              style: TextStyle(fontSize: 17, color: Colors.black),
+            ),
+          );
+        }
+      });
+    } else {
       return const Center(
         child: Text(
           'oops!! location not found 😕😕',
           style: TextStyle(fontSize: 17, color: Colors.red),
         ),
       );
-    } else if (provider.statusCode == 200) {
-      RecentSearch recentSearch = RecentSearch();
-      provider.getCurrent().then((value) {
-        recentSearch = RecentSearch(
-            lat: value.coord!.lat, lon: value.coord!.lon, name: value.name);
-        provider.recentSearch = recentSearch;
-      });
-
-      DBHelper().addRecentSearch(recentSearch);
-      Navigator.pop(context);
     }
+
+    // print(query);
+    // print(goe.first.country);
+    // var provider = Provider.of<WeatherProvider>(context, listen: false);
+    // provider.getCurrent();
+    // if (query.trim().isEmpty) {
+    //   return const Center(
+    //     child: Text(
+    //       'oops!! this field is required ,enter a location 😕😕',
+    //       style: TextStyle(fontSize: 17, color: Colors.red),
+    //     ),
+    //   );
+    // } else if (provider.statusCode != 200) {
+    //   return const Center(
+    //     child: Text(
+    //       'oops!! location not found 😕😕',
+    //       style: TextStyle(fontSize: 17, color: Colors.red),
+    //     ),
+    //   );
+    // } else if (provider.statusCode == 200) {
+    //   RecentSearch recentSearch = RecentSearch();
+    //   provider.getCurrent().then((value) {
+    //     recentSearch = RecentSearch(
+    //         lat: value.coord!.lat, lon: value.coord!.lon, name: value.name);
+    //     provider.recentSearch = recentSearch;
+    //   });
+
+    //   Navigator.pop(context);
+    // }
     return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> suggestionsList = cities.where((element) {
-      final result = element.toLowerCase();
-      final input = query.toLowerCase();
-      return result.contains(input);
-    }).toList();
+    if (query.isNotEmpty) {
+      Geographic.getLoction(query.toLowerCase()).then((value) {
+        suggestionsList = [];
+        for (var i = 0; i < value.length; i++) {
+          suggestionsList.add(value[i]);
+        }
+      });
+    }
+
     return ListView.builder(
       itemCount: suggestionsList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(suggestionsList[index]),
+          title: Text(suggestionsList[index].name!),
+          subtitle: Row(children: [
+            Text(suggestionsList[index].country!),
+            Text(
+                ', lat :${double.parse(suggestionsList[index].lat!.toString()).toStringAsFixed(3)}'),
+            Text(
+              ', lon :${double.parse(suggestionsList[index].lon!.toString()).toStringAsFixed(3)}',
+              style: const TextStyle(overflow: TextOverflow.ellipsis),
+            )
+          ]),
           onTap: () {
-            query = suggestionsList[index];
+            query = suggestionsList[index].name!;
           },
         );
       },
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // class Search extends SearchDelegate {
 //   const Search({super.key});

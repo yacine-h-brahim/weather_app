@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_app/controles/geographic.dart';
+import 'package:weather_app/models/geo.dart';
 import 'package:weather_app/models/recent_search.dart';
 import 'package:weather_app/views/pages/home.dart';
 
@@ -16,6 +18,7 @@ class Jome extends StatefulWidget {
 class _JomeState extends State<Jome> {
   // List<String> recentSearchNames = [];
   // List<RecentSearch> recentSearchList = [];
+  List<Goe> list = [];
 
   @override
   void initState() {
@@ -28,7 +31,14 @@ class _JomeState extends State<Jome> {
       });
     });
 //TODO:MEKE THIS AN CONSTANT IN THE WEATHER PROVIDER::::::::::::
-
+    Geographic.getLoction('ghardaia').then((value) {
+      print(value);
+      for (var element in value) {
+        setState(() {
+          list.add(element);
+        });
+      }
+    });
     DBHelper().selecetRecentSearch().then((value) {
       for (int i = 0; i < value.length; i++) {
         setState(() {
@@ -54,14 +64,17 @@ class _JomeState extends State<Jome> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<WeatherProvider>(context);
-    debugPrint(provider.lastUpdateTime);
-    debugPrint(
-        'provider.recentSearchList :${provider.recentSearchList.last.toMap().toString()}');
+    // debugPrint(provider.lastUpdateTime);
+    // debugPrint(
+    //     'provider.recentSearchList :${provider.recentSearchList.last.toMap().toString()}');
     // List list =
     // debugPrint('list.toString() : ${list.toString()}');
     // return Container(
     //   color: Colors.amber,
     // );
-    return Container();
+    return Container(
+      color: Colors.red,
+      child: Text(list.first.country.toString()),
+    );
   }
 }

@@ -35,10 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     DBHelper().selecteRecentRow().then((value) {
       setState(() {
-        debugPrint(value.name.toString());
         Provider.of<WeatherProvider>(context, listen: false).recentSearch =
             RecentSearch(
-                id: value.id, lat: value.lat, lon: value.lon, name: value.name);
+                id: value.id,
+                country: value.country,
+                lat: value.lat,
+                lon: value.lon,
+                name: value.name);
       });
     });
 //TODO:MEKE THIS AN CONSTANT IN THE WEATHER PROVIDER::::::::::::
@@ -58,11 +61,19 @@ class _MyHomePageState extends State<MyHomePage> {
     var theme = Theme.of(context).textTheme;
     var provider = Provider.of<WeatherProvider>(context, listen: true);
 
-    List<String> listOfName = provider.recentSearchList
-        .map(
-          (e) => e.name!,
-        )
-        .toList();
+    List<String> listOfName = [];
+    if (provider.recentSearchList.length < 5) {
+      listOfName = provider.recentSearchList
+          .map(
+            (e) => e.name! + ' ,' + e.country!,
+          )
+          .toList();
+    } else {
+      for (var i = 0; i < 5; i++) {
+        listOfName.add(
+            '${provider.recentSearchList[i].name!} ,${provider.recentSearchList[i].country!}');
+      }
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -77,15 +88,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: blue2E3A59,
                     size: 24,
                   ),
+                  const SizedBox(width: 8),
                   SizedBox(
                       width: MediaQuery.of(context).size.width * .55,
                       child: DropdownButtonHideUnderline(
                           child: DropdownButton(
-                        value: provider.recentSearch.name,
+                        style: const TextStyle(
+                            color: Color.fromRGBO(32, 28, 28, 1),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
+                        value:
+                            '${provider.recentSearch.name} ,${provider.recentSearch.country}',
                         items: listOfName.map(buildItem).toList(),
                         onChanged: (value) {
                           for (var e in provider.recentSearchList) {
-                            if (e.name == value) {
+                            if ('${e.name!.toLowerCase()} ,${e.country!.toLowerCase()}' ==
+                                value!.toLowerCase()) {
                               setState(() {
                                 provider.recentSearch = e;
                               });
@@ -104,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         size: 25,
                       ),
                       onTap: () {
-                        showSearch(context: context, delegate: Search());
+                        showSearch(context: context, delegate: Search())
+                            .then((value) => setState(() {}));
                       })
                 ]))),
         body: Padding(

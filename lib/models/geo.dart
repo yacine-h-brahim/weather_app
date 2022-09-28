@@ -1,4 +1,4 @@
-class Geo {
+class Goe {
   String? name;
   LocalNames? localNames;
   double? lat;
@@ -6,7 +6,7 @@ class Geo {
   String? country;
   String? state;
 
-  Geo(
+  Goe(
       {this.name,
       this.localNames,
       this.lat,
@@ -14,7 +14,7 @@ class Geo {
       this.country,
       this.state});
 
-  Geo.fromJson(Map<String, dynamic> json) {
+  Goe.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     localNames = json['local_names'] != null
         ? LocalNames.fromJson(json['local_names'])

@@ -32,6 +32,7 @@ class DBHelper {
                                   CREATE TABLE RecentSearch (
                                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                                   name TEXT,
+                                  country TEXT,
                                   lat REAL,
                                   lon REAL
                               );
@@ -40,6 +41,7 @@ class DBHelper {
                 'RecentSearch',
                 {
                   'name': 'Ghardaia',
+                  'country': 'DZ',
                   'lat': 32.4944,
                   'lon': 3.6445,
                 },
@@ -48,6 +50,7 @@ class DBHelper {
                 'RecentSearch',
                 {
                   'name': 'Alger',
+                  'country': 'DZ',
                   'lat': 36.7538,
                   'lon': 3.0588,
                 },
@@ -56,6 +59,7 @@ class DBHelper {
                 'RecentSearch',
                 {
                   'name': 'Oran',
+                  'country': 'DZ',
                   'lat': 35.6987,
                   'lon': -0.6349,
                 },
@@ -64,6 +68,7 @@ class DBHelper {
                 'RecentSearch',
                 {
                   'name': 'Annaba',
+                  'country': 'DZ',
                   'lat': 36.9142,
                   'lon': 7.7427,
                 },
@@ -155,6 +160,7 @@ class DBHelper {
         'RecentSearch',
         {
           'name': recentSearch.name,
+          'country': recentSearch.country,
           'lat': recentSearch.lat,
           'lon': recentSearch.lon,
         },
@@ -179,8 +185,8 @@ class DBHelper {
   Future<List<RecentSearch>> selecetRecentSearch() async {
     List<RecentSearch> listOfRecent = [];
     try {
-      List<Map<String, dynamic>> list =
-          await _database!.rawQuery('select * from RecentSearch ;');
+      List<Map<String, dynamic>> list = await _database!
+          .rawQuery('select * from RecentSearch ORDER BY id DESC LIMIT 5;');
 
       for (var i = 0; i < list.length; i++) {
         listOfRecent.add(RecentSearch.fromMap(list[i]));

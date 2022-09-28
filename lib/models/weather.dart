@@ -87,8 +87,9 @@ class CurrentWeather {
 }
 
 class Coord {
-  double? lon;
-  double? lat;
+  dynamic lon;
+
+  dynamic lat;
 
   Coord({this.lon, this.lat});
 
@@ -131,14 +132,14 @@ class Weather {
 }
 
 class Mian {
-  double? temp;
-  double? feelsLike;
-  double? tempMin;
-  double? tempMax;
-  int? pressure;
-  int? humidity;
-  int? seaLevel;
-  int? grndLevel;
+  dynamic temp;
+  dynamic feelsLike;
+  dynamic tempMin;
+  dynamic tempMax;
+  dynamic pressure;
+  dynamic humidity;
+  dynamic seaLevel;
+  dynamic grndLevel;
 
   Mian(
       {this.temp,
