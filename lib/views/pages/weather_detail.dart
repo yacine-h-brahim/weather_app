@@ -12,6 +12,8 @@ import 'package:weather_app/models/air_pollution_data.dart';
 import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/models/recent_search.dart';
 import 'package:weather_app/models/weather.dart';
+import 'package:weather_app/main.dart';
+import 'package:weather_app/views/themes.dart';
 
 import '../../db/db.dart';
 
@@ -28,67 +30,71 @@ class DetailWeather extends StatefulWidget {
 }
 
 class _DetailWeatherState extends State<DetailWeather> {
-  String? lastUpdateTime = '';
-
-  @override
-  void initState() {
-    // DBHelper().selecetLastUpdate().then((value) {
-    //   setState(() {
-    //     lastUpdateTime = value;
-    //   });
-    // });
-    super.initState();
-  }
+  AllThemes theme = AllThemes();
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<WeatherProvider>(context);
-    var theme = Theme.of(context).textTheme;
+    final provider = Provider.of<WeatherProvider>(context);
+    final Color background = provider.isDarkMode
+        ? const Color.fromRGBO(36, 36, 37, 1)
+        : const Color.fromARGB(255, 245, 245, 245);
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.white,
+      backgroundColor: provider.isDarkMode
+          ? const Color.fromRGBO(32, 29, 29, 1)
+          : const Color.fromRGBO(255, 255, 255, 1),
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: InkWell(
-          child: const Icon(
-            Coolicons.chevron_left,
-            size: 25,
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          '${widget.recentSearch.name}',
-          style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
-        ),
-        centerTitle: true,
-        actions: const [
-          Icon(
-            Icons.more_horiz_rounded,
-            color: Colors.white,
-            size: 25,
-          ),
-          SizedBox(width: 16)
-        ],
-      ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: InkWell(
+              child: const Icon(Coolicons.chevron_left, size: 25),
+              onTap: () {
+                Navigator.pop(context);
+              }),
+          title: Text(
+              '${widget.recentSearch.name} ,${widget.recentSearch.country}',
+              style: theme.headline2White),
+          centerTitle: true,
+          actions: [
+            PopupMenuButton(
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                            const Text('dark mode'),
+                            Switch.adaptive(
+                                value: provider.isDarkMode,
+                                activeColor: Colors.green,
+                                onChanged: (value) {
+                                  provider.toggleThemeMode(value);
+                                  setMode(value).whenComplete(() {
+                                    RestartWidget.restartApp(context);
+                                  });
+                                })
+                          ]))
+                    ])
+          ]),
       body: Column(
         children: [
           Container(
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: provider.isNight()
+                      colors: provider.isDarkMode
                           ? [
-                              const Color.fromRGBO(76, 78, 83, 1),
-                              const Color.fromRGBO(12, 18, 36, 1),
-                            ]
-                          : [
-                              const Color.fromRGBO(79, 128, 250, 1),
-                              const Color.fromRGBO(55, 100, 215, 1),
+                              const Color.fromRGBO(79, 127, 250, 1),
                               const Color.fromRGBO(51, 95, 209, 1)
-                            ],
+                            ]
+                          : provider.isNight()
+                              ? [
+                                  const Color.fromRGBO(76, 78, 83, 1),
+                                  const Color.fromRGBO(12, 18, 36, 1),
+                                ]
+                              : [
+                                  const Color.fromRGBO(79, 128, 250, 1),
+                                  const Color.fromRGBO(55, 100, 215, 1),
+                                  const Color.fromRGBO(51, 95, 209, 1)
+                                ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight)),
               height: MediaQuery.of(context).size.height * .4,
@@ -99,19 +105,16 @@ class _DetailWeatherState extends State<DetailWeather> {
                   children: [
                     const SizedBox(height: 30),
                     Text(DateFormat('yMMMMEEEEd').format(DateTime.now()),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400)),
+                        style: theme.bodyText2),
                     Image.network(
                       "http://openweathermap.org/img/w/${widget.currentSnapshot.data!.weather!.first.icon!}.png",
                     ),
                     const SizedBox(height: 15),
                     Text('${widget.currentSnapshot.data!.mian!.feelsLike}° C',
-                        style: theme.headline2),
+                        style: theme.bodyText1),
                     Text(
                         '${widget.currentSnapshot.data!.weather!.first.description}',
-                        style: theme.headline3),
+                        style: theme.subtitle1White20),
                     const SizedBox(height: 20),
                     FutureBuilder(
                         future: DBHelper().selecetLastUpdate(),
@@ -120,10 +123,7 @@ class _DetailWeatherState extends State<DetailWeather> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text('Last update ${snapshot.data}',
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400)),
+                                    style: theme.bodyText2),
                                 InkWell(
                                     onTap: () {
                                       DBHelper().addLastUpdate(
@@ -149,12 +149,10 @@ class _DetailWeatherState extends State<DetailWeather> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(children: [
-              const Text(
+              Text(
                 'Hourly Weather',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                    fontSize: 20),
+                style:
+                    provider.isDarkMode ? theme.headline1w : theme.headline1b,
               ),
               Expanded(child: Container())
             ]),
@@ -175,8 +173,7 @@ class _DetailWeatherState extends State<DetailWeather> {
                               // height: 100,
                               width: 87,
                               decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 245, 245, 245),
+                                  color: background,
                                   borderRadius: BorderRadius.circular(7.5)),
                               child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -186,19 +183,16 @@ class _DetailWeatherState extends State<DetailWeather> {
                                         'http://openweathermap.org/img/w/${snapshot.data!.lst![index].weather!.first.icon!}.png'),
                                     Text(
                                         '${snapshot.data!.lst![index].main!.temp}° C',
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                Color.fromRGBO(32, 28, 28, 1),
-                                            fontWeight: FontWeight.w600)),
+                                        style: provider.isDarkMode
+                                            ? theme.subtitle2White14
+                                            : theme.subtitle2black14),
                                     Text(
                                         DateFormat('Hm').add_Md().format(
                                             DateTime.parse(snapshot
                                                 .data!.lst![index].dtTxt!)),
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color:
-                                                Color.fromRGBO(73, 67, 67, 1)))
+                                        style: provider.isDarkMode
+                                            ? theme.bodyTextWhite
+                                            : theme.bodyTextBrown)
                                   ])))));
                 } else if (snapshot.hasError) {
                   Fluttertoast.showToast(msg: snapshot.error.toString());
@@ -211,12 +205,10 @@ class _DetailWeatherState extends State<DetailWeather> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(children: [
-              const Text(
+              Text(
                 'Information Details',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                    fontSize: 20),
+                style:
+                    provider.isDarkMode ? theme.headline1w : theme.headline1b,
               ),
               Expanded(child: Container())
             ]),
@@ -236,11 +228,12 @@ class _DetailWeatherState extends State<DetailWeather> {
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: const Color.fromRGBO(250, 250, 250, 1)),
+                          color: background),
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            const SizedBox(width: 16),
                             CircularPercentIndicator(
                               animation: true,
                               backgroundColor:
@@ -248,38 +241,36 @@ class _DetailWeatherState extends State<DetailWeather> {
                               animationDuration: 1500,
                               radius: 30.0,
                               lineWidth: 5.0,
-                              percent: AirPollutionData.getMarks(
-                                  snapshot.data!.list!.first.main!.aqi)['perc'],
+                              percent: AirPollutionData.getMarks(snapshot
+                                      .data!.list!.first.main!.aqi)['perc'] /
+                                  100,
                               animateFromLastPercent: true,
                               startAngle: 180,
                               center: Text(
-                                "${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['perc'] * 100}",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      //TODO: GREEN IF AQI IN GOOD STATE ELSE RED OR ORANG
-                                      AirPollutionData.getMarks(snapshot.data!
-                                          .list!.first.main!.aqi)['color'],
-                                ),
-                              ),
+                                  "${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['perc']}",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AirPollutionData.getMarks(snapshot
+                                        .data!.list!.first.main!.aqi)['color'],
+                                  )),
                               progressColor: AirPollutionData.getMarks(snapshot
                                   .data!.list!.first.main!.aqi)['color'],
                             ),
+                            const SizedBox(width: 5),
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'AQI -${AirPollutionData.getMarks(snapshot.data!.list!.first.main!.aqi)['name']}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
-                                        fontSize: 14),
+                                    style: provider.isDarkMode
+                                        ? theme.subtitle2White14
+                                        : theme.subtitle2black14,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width *
-                                          .7,
+                                          .65,
                                       child: Text(
                                           AirPollutionData.getMarks(snapshot
                                               .data!
@@ -289,67 +280,66 @@ class _DetailWeatherState extends State<DetailWeather> {
                                               .aqi)['description'],
                                           maxLines: 4,
                                           softWrap: true,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.2,
-                                          )))
+                                          style: provider.isDarkMode
+                                              ? theme.bodyText3White.copyWith(
+                                                  height: 1.2, fontSize: 12)
+                                              : theme.bodyText3Brown.copyWith(
+                                                  height: 1.2, fontSize: 12)))
                                 ])
                           ]));
                 }
                 return const CircularProgressIndicator();
               }),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      cardMoreDetail(
-                          '${widget.currentSnapshot.data!.mian!.humidity} %',
-                          'Humidity',
-                          const Icon(
-                            Remix.blaze_line,
-                            size: 25,
-                            color: Color.fromRGBO(60, 110, 239, 1),
-                          )),
-                      cardMoreDetail(
-                          '${widget.currentSnapshot.data!.mian!.pressure} hPa',
-                          'Air pressure',
-                          const Icon(
-                            Remix.haze_2_line,
-                            size: 25,
-                            color: Color.fromRGBO(60, 110, 239, 1),
-                          ))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      cardMoreDetail(
-                          '${widget.currentSnapshot.data!.wind!.speed} km/h',
-                          'Wind velocity',
-                          const Icon(
-                            Remix.windy_line,
-                            size: 25,
-                            color: Color.fromRGBO(60, 110, 239, 1),
-                          )),
-                      cardMoreDetail(
-                          '${widget.currentSnapshot.data!.clouds!.all}%',
-                          'Fog',
-                          const Icon(
-                            Remix.mist_line,
-                            size: 25,
-                            color: Color.fromRGBO(60, 110, 239, 1),
-                          ))
-                    ],
-                  ),
-                ],
-              ),
+
+          Container(
+            height: MediaQuery.of(context).size.height * .19,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    cardMoreDetail(
+                        '${widget.currentSnapshot.data!.mian!.humidity} %',
+                        'Humidity',
+                        const Icon(
+                          Remix.blaze_line,
+                          size: 25,
+                          color: Color.fromRGBO(60, 110, 239, 1),
+                        )),
+                    cardMoreDetail(
+                        '${widget.currentSnapshot.data!.mian!.pressure} hPa',
+                        'Air pressure',
+                        const Icon(
+                          Remix.haze_2_line,
+                          size: 25,
+                          color: Color.fromRGBO(60, 110, 239, 1),
+                        ))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    cardMoreDetail(
+                        '${widget.currentSnapshot.data!.wind!.speed} km/h',
+                        'Wind velocity',
+                        const Icon(
+                          Remix.windy_line,
+                          size: 25,
+                          color: Color.fromRGBO(60, 110, 239, 1),
+                        )),
+                    cardMoreDetail(
+                        '${widget.currentSnapshot.data!.clouds!.all}%',
+                        'Fog',
+                        const Icon(
+                          Remix.mist_line,
+                          size: 25,
+                          color: Color.fromRGBO(60, 110, 239, 1),
+                        ))
+                  ],
+                ),
+              ],
             ),
           )
         ],
@@ -357,13 +347,17 @@ class _DetailWeatherState extends State<DetailWeather> {
     );
   }
 
-  Widget cardMoreDetail(String title, String subTitle, Icon icon) => Container(
+  Widget cardMoreDetail(String title, String subTitle, Icon icon) {
+    final provider = Provider.of<WeatherProvider>(context);
+    Color background = provider.isDarkMode
+        ? const Color.fromRGBO(36, 36, 37, 1)
+        : const Color.fromARGB(255, 245, 245, 245);
+    return Container(
         padding: const EdgeInsets.only(top: 5),
         height: 60,
         width: MediaQuery.of(context).size.width * 0.45,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: const Color.fromRGBO(250, 250, 250, 1)),
+            borderRadius: BorderRadius.circular(12), color: background),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -372,20 +366,19 @@ class _DetailWeatherState extends State<DetailWeather> {
               icon,
               const SizedBox(width: 12),
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  Text(subTitle,
-                      style: const TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w400))
-                ],
-              )
-            ]),
-      );
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: provider.isDarkMode
+                            ? theme.subtitle2White14
+                            : theme.subtitle2black14),
+                    Text(subTitle,
+                        style: provider.isDarkMode
+                            ? theme.bodyText3White
+                            : theme.bodyText3Brown)
+                  ])
+            ]));
+  }
 }
 //

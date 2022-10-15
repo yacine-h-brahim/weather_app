@@ -44,47 +44,42 @@ class AirPollutionData {
   }
 
   static Map<String?, dynamic> getMarks(dynamic aqi) {
-    Map<String, dynamic> map = {
-      'name': '',
-      'color': Colors.red,
-      'perc': 0.2,
-      'description': ''
-    };
+    Map<String, dynamic> map = {};
     if (aqi != null) {
       //TODO: CHANGE DESCRIPTOINS AND NAMES ON THIS MAP;
       switch (aqi) {
         case 1:
           map['name'] = 'Good';
           map['color'] = Colors.green;
-          map['perc'] = 0.2;
+          map['perc'] = 20;
           map['description'] =
               'Everyone can continue their outdoor activities normally.';
           break;
         case 2:
           map['name'] = 'Fair';
           map['color'] = Colors.orange;
-          map['perc'] = 0.4;
+          map['perc'] = 40;
           map['description'] =
               'Only very few hypersensitive people should reduce outdoor activities.';
           break;
         case 3:
           map['name'] = 'Moderate';
           map['color'] = Colors.yellow;
-          map['perc'] = 0.6;
+          map['perc'] = 60;
           map['description'] =
               'Children, seniors and individuals with respiratory or heart diseases should reduce sustained and high-intensity outdoor exercises.';
           break;
         case 4:
           map['name'] = 'Poor';
           map['color'] = Colors.red;
-          map['perc'] = 0.8;
+          map['perc'] = 80;
           map['description'] =
               'Children, seniors and individuals with heart or lung diseases should stay indoors and avoid outdoor activities. General population should reduce outdoor activities.';
           break;
         case 5:
           map['name'] = 'Very Poor';
           map['color'] = Colors.brown;
-          map['perc'] = 1.0;
+          map['perc'] = 97;
           map['description'] =
               'Children, seniors and the sick should stay indoors and avoid physical exertion. General population should avoid outdoor activities.';
           break;

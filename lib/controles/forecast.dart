@@ -23,10 +23,13 @@ class ForecastFiveThreeProvider {
     return forecastFiveThree;
   }
 
-  static List dailyListTemp(List<Lst> lst) {
+  static List dailyListTemp(List<Lst>? lst) {
     Map map = {};
-    for (var element in lst) {
-      map[DateFormat('M/d/y').format(DateTime.parse(element.dtTxt!))] = element;
+    if (lst != null) {
+      for (var element in lst) {
+        map[DateFormat('M/d/y').format(DateTime.parse(element.dtTxt!))] =
+            element;
+      }
     }
     return map.values.toList();
   }

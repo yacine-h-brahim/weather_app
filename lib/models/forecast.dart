@@ -38,7 +38,7 @@ class ForecastFiveThree {
 }
 
 class Lst {
-  int? dt;
+  dynamic dt;
   Main? main;
   List<Weather>? weather;
   Clouds? clouds;
@@ -47,7 +47,7 @@ class Lst {
   dynamic pop;
   Rain? rain;
   Sys? sys;
-  String? dtTxt;
+  dynamic dtTxt;
 
   Lst(
       {this.dt,
@@ -157,7 +157,7 @@ class Main {
 }
 
 class Weather {
-  int? id;
+  dynamic id;
   String? main;
   String? description;
   String? icon;
@@ -236,7 +236,7 @@ class Rain {
 }
 
 class Sys {
-  String? pod;
+  dynamic pod;
 
   Sys({this.pod});
 

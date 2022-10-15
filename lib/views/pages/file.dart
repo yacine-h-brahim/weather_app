@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/controles/geographic.dart';
 import 'package:weather_app/models/geo.dart';
-import 'package:weather_app/models/recent_search.dart';
-import 'package:weather_app/views/pages/home.dart';
 
 import '../../controles/current_weather.dart';
 import '../../db/db.dart';
@@ -25,14 +23,12 @@ class _JomeState extends State<Jome> {
     super.initState();
     DBHelper().selecteRecentRow().then((value) {
       setState(() {
-        debugPrint(value.toString());
         Provider.of<WeatherProvider>(context, listen: false).recentSearch =
             value;
       });
     });
 //TODO:MEKE THIS AN CONSTANT IN THE WEATHER PROVIDER::::::::::::
     Geographic.getLoction('ghardaia').then((value) {
-      print(value);
       for (var element in value) {
         setState(() {
           list.add(element);
@@ -64,14 +60,7 @@ class _JomeState extends State<Jome> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<WeatherProvider>(context);
-    // debugPrint(provider.lastUpdateTime);
-    // debugPrint(
-    //     'provider.recentSearchList :${provider.recentSearchList.last.toMap().toString()}');
-    // List list =
-    // debugPrint('list.toString() : ${list.toString()}');
-    // return Container(
-    //   color: Colors.amber,
-    // );
+
     return Container(
       color: Colors.red,
       child: Text(list.first.country.toString()),

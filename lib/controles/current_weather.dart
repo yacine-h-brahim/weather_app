@@ -8,9 +8,20 @@ import 'package:weather_app/models/weather.dart';
 
 import '../API/secret.dart';
 
-class WeatherProvider with ChangeNotifier {
+class WeatherProvider extends ChangeNotifier {
+  ///////THEME PROVIDER ///////////////////////////
+
+  ThemeMode themeMode = ThemeMode.system;
+  bool get isDarkMode => themeMode == ThemeMode.dark;
+
+  void toggleThemeMode(bool isOn) {
+    themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+  }
+
+  /////////////////////WEATHER PROVIDER ////////////////////////
   String? lastUpdateTime = '';
-  RecentSearch recentSearch = RecentSearch();
+  RecentSearch? recentSearch = RecentSearch();
   List<RecentSearch> recentSearchList = [];
 
   bool isNight() {
@@ -23,7 +34,7 @@ class WeatherProvider with ChangeNotifier {
 
   Future<CurrentWeather> getCurrent() async {
     var url =
-        'https://api.openweathermap.org/data/2.5/weather?q=${recentSearch.name}&units=metric&appid=$apiKey1';
+        'https://api.openweathermap.org/data/2.5/weather?q=${recentSearch!.name}&units=metric&appid=$apiKey1';
     try {
       var resoponse = await http.get(Uri.parse(url));
 

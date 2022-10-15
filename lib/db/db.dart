@@ -7,16 +7,13 @@ import '../models/recent_search.dart';
 class DBHelper {
   static Database? _database;
   static const int version = 1;
-  static const String tableName = 'LastUpdate';
 ////CREATING DATABASE METHODE
   static Future<void> initDB() async {
     if (_database != null) {
-      debugPrint('database exist already ================================');
       return;
     } else {
       try {
         final String path = '${await getDatabasesPath()}weather.db';
-        debugPrint(path);
         _database = await openDatabase(
           path,
           version: version,
@@ -46,37 +43,6 @@ class DBHelper {
                   'lon': 3.6445,
                 },
                 conflictAlgorithm: ConflictAlgorithm.replace);
-            await db.insert(
-                'RecentSearch',
-                {
-                  'name': 'Alger',
-                  'country': 'DZ',
-                  'lat': 36.7538,
-                  'lon': 3.0588,
-                },
-                conflictAlgorithm: ConflictAlgorithm.replace);
-            await db.insert(
-                'RecentSearch',
-                {
-                  'name': 'Oran',
-                  'country': 'DZ',
-                  'lat': 35.6987,
-                  'lon': -0.6349,
-                },
-                conflictAlgorithm: ConflictAlgorithm.replace);
-            await db.insert(
-                'RecentSearch',
-                {
-                  'name': 'Annaba',
-                  'country': 'DZ',
-                  'lat': 36.9142,
-                  'lon': 7.7427,
-                },
-                conflictAlgorithm: ConflictAlgorithm.replace);
-
-            debugPrint(
-                'database created ================================== $number');
-            // return ;
           },
         );
       } catch (e) {
@@ -95,7 +61,7 @@ class DBHelper {
           {'id': 1, 'lastUpdate': DateFormat('jm').format(DateTime.now())},
           conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
-      debugPrint(e.toString());
+      Fluttertoast.showToast(msg: e.toString(), backgroundColor: Colors.red);
     }
   }
 
@@ -186,7 +152,7 @@ class DBHelper {
     List<RecentSearch> listOfRecent = [];
     try {
       List<Map<String, dynamic>> list = await _database!
-          .rawQuery('select * from RecentSearch ORDER BY id DESC LIMIT 5;');
+          .rawQuery('select * from RecentSearch ORDER BY id DESC;');
 
       for (var i = 0; i < list.length; i++) {
         listOfRecent.add(RecentSearch.fromMap(list[i]));
