@@ -16,4 +16,4 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 source design in figma :
-https://www.figma.com/file/csOWdxuQeWP2iwqdA0etYC/Weather-App-(Community)?node-id=40%3A282
+https://www.figma.com/community/file/1055880209981553884
