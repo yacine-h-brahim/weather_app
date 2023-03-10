@@ -162,10 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             return const CircularProgressIndicator();
                           } else if (snapshot.hasData) {
                             List list = [];
-                            if (snapshot.data != null) {
-                              list = ForecastFiveThreeProvider.dailyListTemp(
-                                  snapshot.data!.lst);
-                            }
+                            list = ForecastFiveThreeProvider.dailyListTemp(
+                                snapshot.data!.lst);
 
                             return Column(children: [
                               FutureBuilder<CurrentWeather>(
